@@ -1,0 +1,54 @@
+# Build PhotoCaptionLayer for iOS Simulator on cloud macOS.
+# No Mac / no Xcode required locally — push to GitHub and this verifies compilation.
+name: Build (iOS Simulator)
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch: # allow manual "Run workflow" from the Actions tab
+
+concurrency:
+  group: build-ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: xcodebuild (iphonesimulator)
+    runs-on: macos-14 # Xcode 15.x → iOS 17 SDK available
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show environment
+        run: |
+          xcode-select -p
+          xcodebuild -version
+          xcodebuild -showsdks | grep -i ios || true
+
+      - name: Resolve schemes
+        run: |
+          xcodebuild -project PhotoCaptionLayer.xcodeproj -list
+
+      - name: Build for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project PhotoCaptionLayer.xcodeproj \
+            -scheme PhotoCaptionLayer \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build | tee build.log
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: warn
