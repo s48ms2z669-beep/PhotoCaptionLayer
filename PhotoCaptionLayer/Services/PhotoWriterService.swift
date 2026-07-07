@@ -138,14 +138,10 @@ final class PhotoWriterService {
             let gate = ContinuationGate<PHContentEditingInput?>()
 
             asset.requestContentEditingInput(with: options) { input, info in
-                let error = info?[PHContentEditingInputErrorKey] as? Error
-                let isDegraded = (info?[PHContentEditingInputResultIsDegradedKey] as? NSNumber)?.boolValue ?? false
+                let requestError = info[PHContentEditingInputErrorKey] as? Error
 
-                // Only resolve on the final (non-degraded) delivery or on error.
-                if isDegraded { return }
-
-                if let error {
-                    gate.resumeOnceThrowing(continuation, with: .failure(error))
+                if let requestError {
+                    gate.resumeOnceThrowing(continuation, with: .failure(requestError))
                 } else {
                     gate.resumeOnceThrowing(continuation, with: .success(input))
                 }
