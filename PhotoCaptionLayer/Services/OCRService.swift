@@ -14,7 +14,7 @@ import UIKit
 import Foundation
 
 /// A single recognised text line with confidence and normalised bounding box.
-struct OCRResult: Identifiable, Equatable, Hashable {
+struct OCRResult: Identifiable, Equatable {
     let id = UUID()
     let text: String
     let confidence: Float

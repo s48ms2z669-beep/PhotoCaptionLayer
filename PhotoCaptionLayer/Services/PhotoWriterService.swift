@@ -176,7 +176,7 @@ private final class ContinuationGate<T>: @unchecked Sendable {
     private let lock = NSLock()
 
     func resumeOnceThrowing(
-        _ continuation: CheckedThrowingContinuation<T, Error>,
+        _ continuation: CheckedContinuation<T, Error>,
         with result: Result<T, Error>
     ) {
         lock.lock()
