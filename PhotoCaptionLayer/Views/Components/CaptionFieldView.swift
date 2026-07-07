@@ -46,9 +46,15 @@ struct CaptionFieldView: View {
             Text(title)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
-            TextField(hint, text: text, axis: axis)
-                .textFieldStyle(.roundedBorder)
-                .lineLimit(axis == .vertical ? 3...6 : 1)
+            if axis == .vertical {
+                TextField(hint, text: text, axis: axis)
+                    .textFieldStyle(.roundedBorder)
+                    .lineLimit(3...6)
+            } else {
+                TextField(hint, text: text, axis: axis)
+                    .textFieldStyle(.roundedBorder)
+                    .lineLimit(1)
+            }
         }
     }
 }
